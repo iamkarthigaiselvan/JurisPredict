@@ -1,10 +1,12 @@
 # ⚖️ JurisPredict
 
+https://jurispredict-beqjmyc2a2gzeppejdexue.streamlit.app/
+
 ## AI-Powered Legal Research Assistant
 
 JurisPredict is a Retrieval-Augmented Generation (RAG) application that allows users to ask questions about legal judgments and receive answers grounded in the source document.
 
-## 🚀 How It Works
+##  How It Works
 
 PDF
 ↓
@@ -22,7 +24,7 @@ GPT-OSS 20B via Groq
 ↓
 Answer + Sources
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - Python
 - Streamlit
@@ -33,7 +35,7 @@ Answer + Sources
 - GPT-OSS 20B
 - PyPDF
 
-## ✨ Features
+##  Features
 
 - Upload legal PDF documents
 - Extract text from judgments
@@ -43,7 +45,7 @@ Answer + Sources
 - Display retrieved source passages
 - Reduce hallucination through document-grounded generation
 
-## 🧪 Example
+##  Example
 
 ### Question
 
@@ -55,10 +57,10 @@ The question is converted into an embedding and compared against the legal docum
 
 The most relevant passages are then provided to GPT-OSS 20B to generate a grounded answer.
 
-## ⚠️ Disclaimer
+##  Disclaimer
 
 JurisPredict is an educational and research project. It is not a substitute for professional legal advice.
 
-## 👨‍💻 Author
+## Author
 
 Karthigaiselvan M

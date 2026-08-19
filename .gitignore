@@ -1,0 +1,25 @@
+# Environment
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Vector database
+chroma/
+chroma_db/
+*.db
+
+# Data
+data/*.pdf
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

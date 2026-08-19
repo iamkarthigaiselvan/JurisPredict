@@ -1,6 +1,6 @@
 # ⚖️ JurisPredict
 
-https://jurispredict-beqjmyc2a2gzeppejdexue.streamlit.app/
+[Live Demo] https://jurispredict-beqjmyc2a2gzeppejdexue.streamlit.app/
 
 ## AI-Powered Legal Research Assistant
 

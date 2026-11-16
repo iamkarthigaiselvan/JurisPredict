@@ -1,3 +1,4 @@
+
 import chromadb
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -30,17 +31,22 @@ class VectorStoreManager:
             for i in range(len(texts))
         ]
 
+        chromadb.api.client.SharedSystemClient.clear_system_cache()
+
+        client = chromadb.EphemeralClient()
+
         self.vectorstore = Chroma.from_texts(
             texts=texts,
             embedding=self.embeddings,
             metadatas=metadatas,
-            collection_name="legal_documents"
+            collection_name="legal_documents",
+            client=client
         )
 
     def get_retriever(self, k: int = 4):
         """Return a retriever for similarity search."""
 
-        if not self.vectorstore:
+        if self.vectorstore is None:
             raise ValueError(
                 "Vector store not initialized. "
                 "Call create_index first."
@@ -57,7 +63,7 @@ class VectorStoreManager:
     ) -> List[Any]:
         """Direct similarity search for debugging."""
 
-        if not self.vectorstore:
+        if self.vectorstore is None:
             raise ValueError("Vector store not initialized.")
 
         return self.vectorstore.similarity_search(query, k=k)

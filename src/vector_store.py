@@ -13,7 +13,6 @@ class VectorStoreManager:
         self,
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     ):
-        # Initialize embedding model
         self.embeddings = HuggingFaceEmbeddings(
             model_name=model_name,
             model_kwargs={"device": "cpu"},
@@ -21,15 +20,16 @@ class VectorStoreManager:
         )
 
         self.vectorstore = None
-        self.client = None
+
+        # Create one client and reuse it
+        self.client = chromadb.EphemeralClient()
 
     def create_index(self, texts: List[str]) -> None:
-        """Create an in-memory ChromaDB vector index."""
+        """Create or replace the vector index."""
 
         if not texts:
-            raise ValueError("No text chunks provided for indexing.")
+            raise ValueError("No text chunks provided.")
 
-        # Prepare metadata
         metadatas = [
             {
                 "source": f"chunk_{i}",
@@ -38,15 +38,13 @@ class VectorStoreManager:
             for i in range(len(texts))
         ]
 
-        # Create a fresh in-memory ChromaDB client
-        self.client = chromadb.EphemeralClient(
-            settings=chromadb.Settings(
-                anonymized_telemetry=False,
-                allow_reset=True
-            )
-        )
+        # Remove the previous collection if it exists
+        try:
+            self.client.delete_collection("legal_documents")
+        except Exception:
+            pass
 
-        # Create vector store
+        # Create the vector store using the existing client
         self.vectorstore = Chroma.from_texts(
             texts=texts,
             embedding=self.embeddings,
@@ -56,7 +54,7 @@ class VectorStoreManager:
         )
 
     def get_retriever(self, k: int = 4):
-        """Return a retriever for similarity search."""
+        """Return a retriever."""
 
         if self.vectorstore is None:
             raise ValueError(
@@ -73,7 +71,7 @@ class VectorStoreManager:
         query: str,
         k: int = 4
     ) -> List[Any]:
-        """Perform direct similarity search for debugging."""
+        """Perform similarity search."""
 
         if self.vectorstore is None:
             raise ValueError("Vector store not initialized.")

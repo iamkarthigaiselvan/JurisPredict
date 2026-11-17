@@ -1,5 +1,6 @@
 
 import chromadb
+
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from typing import List, Any
@@ -12,6 +13,7 @@ class VectorStoreManager:
         self,
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     ):
+        # Initialize embedding model
         self.embeddings = HuggingFaceEmbeddings(
             model_name=model_name,
             model_kwargs={"device": "cpu"},
@@ -19,10 +21,15 @@ class VectorStoreManager:
         )
 
         self.vectorstore = None
+        self.client = None
 
     def create_index(self, texts: List[str]) -> None:
-        """Create vector index from text chunks."""
+        """Create an in-memory ChromaDB vector index."""
 
+        if not texts:
+            raise ValueError("No text chunks provided for indexing.")
+
+        # Prepare metadata
         metadatas = [
             {
                 "source": f"chunk_{i}",
@@ -31,16 +38,21 @@ class VectorStoreManager:
             for i in range(len(texts))
         ]
 
-        chromadb.api.client.SharedSystemClient.clear_system_cache()
+        # Create a fresh in-memory ChromaDB client
+        self.client = chromadb.EphemeralClient(
+            settings=chromadb.Settings(
+                anonymized_telemetry=False,
+                allow_reset=True
+            )
+        )
 
-        client = chromadb.EphemeralClient()
-
+        # Create vector store
         self.vectorstore = Chroma.from_texts(
             texts=texts,
             embedding=self.embeddings,
             metadatas=metadatas,
             collection_name="legal_documents",
-            client=client
+            client=self.client
         )
 
     def get_retriever(self, k: int = 4):
@@ -61,9 +73,12 @@ class VectorStoreManager:
         query: str,
         k: int = 4
     ) -> List[Any]:
-        """Direct similarity search for debugging."""
+        """Perform direct similarity search for debugging."""
 
         if self.vectorstore is None:
             raise ValueError("Vector store not initialized.")
 
-        return self.vectorstore.similarity_search(query, k=k)
+        return self.vectorstore.similarity_search(
+            query,
+            k=k
+        )
